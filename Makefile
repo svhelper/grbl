@@ -44,10 +44,13 @@ FUSES      = -U hfuse:w:0xd2:m -U lfuse:w:0xff:m
 AVRDUDE = avrdude $(PROGRAMMER) -p $(DEVICE) -B 10 -F
 
 # Compile flags for avr-gcc v4.8.1. Does not produce -flto warnings.
-# COMPILE = avr-gcc -Wall -Os -DF_CPU=$(CLOCK) -mmcu=$(DEVICE) -I. -ffunction-sections
+COMPILE = avr-gcc -Wall -DF_CPU=$(CLOCK) -mmcu=$(DEVICE) -I. -ffunction-sections \
+  -g -Os -gdwarf-2 -std=gnu99 -fno-inline-small-functions -fdata-sections \
+  -Wl,--relax,--gc-sections \
+  -Wl,--undefined=_mmcu,--section-start=.mmcu=0x910000
 
 # Compile flags for avr-gcc v4.9.2 compatible with the IDE. Or if you don't care about the warnings. 
-COMPILE = avr-gcc -Wall -Os -DF_CPU=$(CLOCK) -mmcu=$(DEVICE) -I. -ffunction-sections -flto
+# COMPILE = avr-gcc -g -Wall -Os -DF_CPU=$(CLOCK) -mmcu=$(DEVICE) -I. -ffunction-sections -flto
 
 
 OBJECTS = $(addprefix $(BUILDDIR)/,$(notdir $(SOURCE:.c=.o)))
